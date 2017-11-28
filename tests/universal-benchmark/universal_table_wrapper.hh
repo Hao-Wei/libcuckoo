@@ -140,7 +140,7 @@ private:
 #ifdef LIBCUCKOO
 #define TABLE "LIBCUCKOO"
 #define TABLE_TYPE "cuckoohash_map"
-#include <libcuckoo/cuckoohash_map.hh>
+#include <hashTables/libcuckoo/cuckoohash_map.hh>
 
 class Table {
 public:
@@ -179,7 +179,7 @@ private:
 #define TABLE "DHASH"
 #define TABLE_TYPE "deterministic_map"
 #define MCX16 1
-#include <deterministicHash/deterministicHash.h>
+#include <hashTables/deterministicHash/deterministicHash.h>
 
 
 //K and V have to be ints for now

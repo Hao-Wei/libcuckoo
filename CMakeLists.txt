@@ -4,10 +4,10 @@ set(libcuckoo_VERSION_MAJOR 0)
 set(libcuckoo_VERSION_MINOR 2)
 
 # Add the libcuckoo interface target
-add_subdirectory(libcuckoo)
+add_subdirectory(hashTables/libcuckoo)
 
 # Add C interface target
-add_subdirectory(libcuckoo-c)
+add_subdirectory(hashTables/libcuckoo-c)
 
 # Build examples
 if(BUILD_EXAMPLES)
