@@ -26,6 +26,7 @@ target_compile_options(universal_benchmark
     PRIVATE -DKEY=${UNIVERSAL_KEY}
     PRIVATE -DVALUE=${UNIVERSAL_VALUE}
     PRIVATE -D${UNIVERSAL_TABLE}
+    -mcx16
 )
 
 if(UNIVERSAL_TRACKING_ALLOCATOR)
