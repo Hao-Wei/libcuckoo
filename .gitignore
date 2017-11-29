@@ -1,2 +1,7 @@
 builds/
-install/
+install/	
+hashtables/hopscotch/cpp_framework.o
+hashtables/hopscotch/main.o
+hashtables/hopscotch/test_data/
+hashtables/hopscotch/test_intel64
+
