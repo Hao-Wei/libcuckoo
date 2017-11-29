@@ -221,7 +221,7 @@ public:
 
   template <typename K, typename Updater, typename V>
   void upsert(const K &k, Updater fn, const V &v) {
-    0;
+  	return;
   }
 
   d_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;
@@ -281,7 +281,8 @@ public:
 
   template <typename K, typename Updater, typename V>
   void upsert(const K &k, Updater fn, const V &v) {
-    0;
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    tbl.upsert(kv);
   }
 
   nd_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;

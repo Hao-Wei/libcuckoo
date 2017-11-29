@@ -113,7 +113,24 @@ class nd_map {
     return 0; // should never get here
   }
 
-
+  //for equal keys, first one to arrive at location wins, linear probing
+  bool upsert(eType v) {
+    kType vkey = hashStruct.getKey(v);
+    intT h = firstIndex(vkey);
+    while (1) {
+      eType c;
+      c = TA[h];
+      intT cmp;
+      if(c==empty && utils::CAS(&TA[h],c,v)) return 1; 
+      else if(0 == hashStruct.cmp(vkey,hashStruct.getKey(c))) {
+      	__sync_fetch_and_add(&TA[h].second, v.second);
+      	return 1;
+      }
+      // move to next bucket
+      h = incrementIndex(h);
+    }
+    return 0; // should never get here
+  }
 
   // needs to be more thoroughly tested
   // currently always returns true

@@ -9,9 +9,6 @@ add_subdirectory(hashtables/libcuckoo)
 # Add C interface target
 add_subdirectory(hashtables/libcuckoo-c)
 
-# Add folklore target
-add_subdirectory(hashtables/growt)
-
 # Build examples
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
