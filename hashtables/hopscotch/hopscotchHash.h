@@ -32,7 +32,7 @@
 using namespace std;
 
 template <class HASH, class intT>
-class Table {
+class hopscotch_map {
  public:
   typedef typename HASH::eType eType;
   typedef typename HASH::kType kType;
@@ -162,7 +162,7 @@ class Table {
 
   // Size is the maximum number of values the hash table will hold.
   // Overfilling the table could put it into an infinite loop.
- Table(intT size, HASH hashF, float _load) :
+ hopscotch_map(intT size, HASH hashF, float _load) :
   load(_load),
     concurrencyLevel(1),
     m(1 << utils::log2Up(100+(intT)(_load*(float)size))), 
@@ -430,7 +430,7 @@ class Table {
 
 template <class HASH, class ET, class intT>
 _seq<ET> removeDuplicates(_seq<ET> S, intT m, HASH hashF) {
-  Table<HASH,intT> T(m,hashF,2.0);
+  hopscotch_map<HASH,intT> T(m,hashF,2.0);
   ET* A = S.A;
   {parallel_for(intT i = 0; i < S.n; i++) { T.insert(A[i]);}}
   _seq<ET> R = T.entries();
@@ -463,8 +463,8 @@ static _seq<intT> removeDuplicates(_seq<intT> A) {
 //typedef Table<hashInt> IntTable;
 //static IntTable makeIntTable(int m) {return IntTable(m,hashInt());}
 template <class intT>
-  static Table<hashInt<intT>,intT > makeIntTable(intT m, float load) {
-  return Table<hashInt<intT>,intT >(m,hashInt<intT>(), load);}
+  static hopscotch_map<hashInt<intT>,intT > makeIntTable(intT m, float load) {
+  return hopscotch_map<hashInt<intT>,intT >(m,hashInt<intT>(), load);}
 
 struct hashStr {
   typedef char* eType;
@@ -493,8 +493,8 @@ static _seq<char*> removeDuplicates(_seq<char*> S) {
   return removeDuplicates(S,hashStr());}
 
 template <class intT>
-  static Table<hashStr,intT> makeStrTable(intT m, float load) {
-  return Table<hashStr,intT>(m,hashStr(), load);}
+  static hopscotch_map<hashStr,intT> makeStrTable(intT m, float load) {
+  return hopscotch_map<hashStr,intT>(m,hashStr(), load);}
 
 template <class KEYHASH, class DTYPE>
 struct hashPair {
