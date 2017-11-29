@@ -364,6 +364,7 @@ public:
 #include <hashtables/growt/utils/hashfct.h>
 #include <hashtables/growt/utils/alignedallocator.h>
 #include <hashtables/growt/data-structures/definitions.h>
+#include <hashtables/growt/example/update_fcts.h>
 
 class Table {
 public:
@@ -371,14 +372,14 @@ public:
   	tbl(n) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) {
-  	auto kv = tbl.getHandle().find(k);
+  	auto kv = tbl.find(k);
   	if(!kv) return 0;
   	v = kv.second; 
     return 1;
   }
 
   template <typename K, typename V> bool insert(const K &k, const V &v) {
-    return successful(tbl.getHandle().insert(k, v));
+    return successful(tbl.insert(k, v));
   }
 
   template <typename K> bool erase(const K &k) { return 0; }
@@ -389,10 +390,10 @@ public:
 
   template <typename K, typename Updater, typename V>
   void upsert(const K &k, Updater fn, const V &v) {
-    0;
+    tbl.insertOrUpdate(k, v, growt::example::Increment());
   }
 
-  growt::uaGrow<murmur2_hasher, growt::AlignedAllocator<> > tbl;
+  growt::folklore<murmur2_hasher, growt::AlignedAllocator<> > tbl;
 
 
 };
