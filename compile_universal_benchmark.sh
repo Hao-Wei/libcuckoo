@@ -10,6 +10,12 @@ cd builds
 #make all
 #cd ..
 
+mkdir folklore
+cd folklore
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=FOLKLORE ../..
+make all
+cd ..
+
 mkdir hopscotch
 cd hopscotch
 cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH ../..
