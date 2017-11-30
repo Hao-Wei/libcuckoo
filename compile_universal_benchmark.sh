@@ -4,12 +4,6 @@ rm -R builds
 mkdir builds
 cd builds
 
-#mkdir hopscotch_v2
-#cd hopscotch_v2
-#cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH_V2 ../..
-#make all
-#cd ..
-
 mkdir folklore
 cd folklore
 cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=FOLKLORE ../..
