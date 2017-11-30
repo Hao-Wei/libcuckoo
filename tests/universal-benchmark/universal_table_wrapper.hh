@@ -376,7 +376,9 @@ public:
 	static const uint64_t _EMPTY_DATA;
 
   inline_ static uint64_t Calc(uint64_t key) {
-    	return std::hash<uint64_t>{}(key);
+  		uint64_t ret = std::hash<uint64_t>{}(key);
+  		if(ret < 2) ret = 2;
+    	return ret;
 	}
 
 	inline_ static bool IsEqual(uint64_t left_key, uint64_t right_key) {
@@ -394,8 +396,8 @@ public:
 
 const uint64_t HASH_INT::_EMPTY_HASH = 0;
 const uint64_t HASH_INT::_BUSY_HASH  = 1;
-const uint64_t HASH_INT::_EMPTY_KEY  = (((uint64_t)1) << 63);
-const uint64_t HASH_INT::_EMPTY_DATA = (((uint64_t)1) << 63);
+const uint64_t HASH_INT::_EMPTY_KEY  = (((uint64_t)1) << 62);
+const uint64_t HASH_INT::_EMPTY_DATA = (((uint64_t)1) << 62);
 
 class Table {
 public:
@@ -414,8 +416,8 @@ public:
   }
 
   template <typename K, typename V> bool insert(const K &k, const V &v) {
-  	K tk = tbl.putIfAbsent(k, v);
-    return tk == HASH_INT::_EMPTY_KEY;
+  	V tv = tbl.putIfAbsent(k, v);
+    return tv == HASH_INT::_EMPTY_DATA;
   }
 
   template <typename K> bool erase(const K &k) { return 0; }
