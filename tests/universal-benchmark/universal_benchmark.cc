@@ -294,7 +294,7 @@ int main(int argc, char **argv) {
     }
 
     // Create and size the table
-    Table tbl(initial_capacity);
+    Table tbl(initial_capacity, g_threads);
 
     std::cerr << "Pre-filling table\n";
     std::vector<std::thread> prefill_threads(g_threads);

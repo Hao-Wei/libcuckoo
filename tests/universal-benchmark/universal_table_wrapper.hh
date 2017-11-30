@@ -144,7 +144,7 @@ private:
 
 class Table {
 public:
-  Table(size_t n) : tbl(n) {}
+  Table(size_t n, size_t n_threads) : tbl(n) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) const {
     return tbl.find(k, v);
@@ -196,7 +196,7 @@ struct hashCustomPair {
 
 class Table {
 public:
-  Table(size_t n) : 
+  Table(size_t n, size_t n_threads) : 
   	hashStruct(hashCustomPair<KEY, VALUE>()), 
   	tbl(n, hashStruct), 
   	empty(hashStruct.empty()) {}
@@ -256,7 +256,7 @@ struct hashCustomPair {
 
 class Table {
 public:
-  Table(size_t n) : 
+  Table(size_t n, size_t n_threads) : 
   	hashStruct(hashCustomPair<KEY, VALUE>()), 
   	tbl(n, hashStruct), 
   	empty(hashStruct.empty()) {}
@@ -318,7 +318,7 @@ struct hashCustomPair {
 
 class Table {
 public:
-  Table(size_t n) : 
+  Table(size_t n, size_t n_threads) : 
   	hashStruct(hashCustomPair<KEY, VALUE>()), 
   	tbl(n, hashStruct, 10000), 
   	empty(hashStruct.empty()) {}
@@ -401,8 +401,8 @@ const uint64_t HASH_INT::_EMPTY_DATA = ((uint64_t)1) << 60;
 
 class Table {
 public:
-  Table(size_t n) :
-  	tbl(2*n, 1000*10*144) {}
+  Table(size_t n, size_t n_threads) :
+  	tbl(2*n, 10000*n_threads) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) {
   	if(tbl.containsKey(k))
@@ -454,7 +454,7 @@ public:
 
 class Table {
 public:
-  Table(size_t n) : 
+  Table(size_t n, size_t n_threads) : 
   	tbl(n) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) {
