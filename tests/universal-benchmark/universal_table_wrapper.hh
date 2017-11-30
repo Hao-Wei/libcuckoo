@@ -402,7 +402,7 @@ const uint64_t HASH_INT::_EMPTY_DATA = ((uint64_t)1) << 60;
 class Table {
 public:
   Table(size_t n) :
-  	tbl(2*n, 1000*10*144) {}
+  	tbl(2*n, 1000*144) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) {
   	if(tbl.containsKey(k))
