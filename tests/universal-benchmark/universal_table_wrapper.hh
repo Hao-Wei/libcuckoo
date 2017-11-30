@@ -370,13 +370,13 @@ public:
 class HASH_INT {
 public:
 	//you must define the following fields and properties
-	static const uint64_t _EMPTY_HASH;
-	static const uint64_t _BUSY_HASH;
+	static const unsigned int _EMPTY_HASH;
+	static const unsigned int _BUSY_HASH;
 	static const uint64_t _EMPTY_KEY;
 	static const uint64_t _EMPTY_DATA;
 
-  inline_ static uint64_t Calc(uint64_t key) {
-  		uint64_t ret = std::hash<uint64_t>{}(key);
+  inline_ static unsigned int Calc(uint64_t key) {
+  		unsigned int ret = std::hash<uint64_t>{}(key);
   		if(ret < 2) ret = 2;
     	return ret;
 	}
@@ -394,10 +394,10 @@ public:
 	}
 };
 
-const uint64_t HASH_INT::_EMPTY_HASH = 0;
-const uint64_t HASH_INT::_BUSY_HASH  = 1;
-const uint64_t HASH_INT::_EMPTY_KEY  = (((uint64_t)1) << 62);
-const uint64_t HASH_INT::_EMPTY_DATA = (((uint64_t)1) << 62);
+const unsigned int HASH_INT::_EMPTY_HASH = 0;
+const unsigned int HASH_INT::_BUSY_HASH  = 1;
+const uint64_t HASH_INT::_EMPTY_KEY  = ((uint64_t)1) << 60;
+const uint64_t HASH_INT::_EMPTY_DATA = ((uint64_t)1) << 60;
 
 class Table {
 public:
