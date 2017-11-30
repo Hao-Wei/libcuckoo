@@ -296,64 +296,43 @@ public:
 #endif
 
 
-#ifdef HOPSCOTCH_BITMAP
-#define TABLE "HOPSCOTCH_BITMAP"
-#define TABLE_TYPE "hopscotch_bitmap_map"
-#define INTEL64 1
-#include "hashtables/hopscotch/framework/cpp_framework.h"
-#include "hashtables/hopscotch/test/Configuration.h"
-#include "hashtables/hopscotch/data_structures/BitmapHopscotchHashMap.h"
-#include "hashtables/hopscotch/data_structures/HopscotchHashMap.h"
 
-class HASH_INT {
-public:
-	//you must define the following fields and properties
-	static const uint64_t _EMPTY_HASH;
-	static const uint64_t _BUSY_HASH;
-	static const uint64_t _EMPTY_KEY;
-	static const uint64_t _EMPTY_DATA;
+#ifdef HOPSCOTCH_V2
+#define TABLE "HOPSCOTCH_V2"
+#define TABLE_TYPE "hopscotch_v2_map"
+#define MCX16 1
+#include <hashtables/hopscotch_v2/hopscotchHash.h>
 
-  inline_ static uint64_t Calc(uint64_t key) {
-    	return std::hash<uint64_t>{}(key);
-	}
 
-	inline_ static bool IsEqual(uint64_t left_key, uint64_t right_key) {
-		return left_key == right_key;
-	}
-
-	inline_ static void relocate_key_reference(uint64_t volatile& left, const uint64_t volatile& right) {
-		left = right;
-	}
-
-	inline_ static void relocate_data_reference(uint64_t volatile& left, const uint64_t volatile& right) {
-		left = right;
-	}
+//K and V have to be ints for now
+template <typename K, typename V>
+struct hashCustomPair {
+  typedef pair<K, V> eType;
+  typedef K kType;
+  eType empty() {return make_pair(-1, -1);}
+  kType getKey(eType v) {return v.first;}
+  unsigned int hash(kType v) {return utils::hash(v);}
+  int cmp(kType v, kType b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
+  bool replaceQ(eType v, eType b) {return 0;}
 };
-
-const uint64_t HASH_INT::_EMPTY_HASH = 0;
-const uint64_t HASH_INT::_BUSY_HASH  = 1;
-const uint64_t HASH_INT::_EMPTY_KEY  = 0;
-const uint64_t HASH_INT::_EMPTY_DATA = 0;
 
 class Table {
 public:
-  Table(size_t n) :
-  	tbl(2*n, 1000*10) {}
+  Table(size_t n) : 
+  	hashStruct(hashCustomPair<KEY, VALUE>()), 
+  	tbl(n, hashStruct, 10000), 
+  	empty(hashStruct.empty()) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) {
-  	if(tbl.containsKey(k))
-  	{
-  		v = tbl.putIfAbsent(k, 0);
-  		return 1;
-  	}
-  	else
-    	return 0;
-    
+  	pair<KEY,VALUE> kv = tbl.find(k);
+  	if(kv == empty) return 0;
+  	v = kv.second; 
+    return 1;
   }
 
   template <typename K, typename V> bool insert(const K &k, const V &v) {
-  	K tk = tbl.putIfAbsent(k, v);
-    return tk == HASH_INT::_EMPTY_KEY;
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    return tbl.insert(kv);
   }
 
   template <typename K> bool erase(const K &k) { return 0; }
@@ -364,11 +343,13 @@ public:
 
   template <typename K, typename Updater, typename V>
   void upsert(const K &k, Updater fn, const V &v) {
-    0;
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    tbl.upsert(kv);
   }
 
-  BitmapHopscotchHashMap<uint64_t, uint64_t, HASH_INT, CMDR::TTASLock, CMDR::Memory> tbl;
-
+  hopscotch_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;
+  hashCustomPair<KEY, VALUE> hashStruct;
+  pair<KEY, VALUE> empty;
 
 };
 
@@ -445,7 +426,7 @@ public:
 
   template <typename K, typename Updater, typename V>
   void upsert(const K &k, Updater fn, const V &v) {
-    0;
+  	tbl.upsert(k, v);
   }
 
   HopscotchHashMap<uint64_t, uint64_t, HASH_INT, CMDR::TTASLock, CMDR::Memory> tbl;

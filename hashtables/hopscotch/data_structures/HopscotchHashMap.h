@@ -352,6 +352,85 @@ public:// Ctors ................................................................
 		return _tHash::_EMPTY_DATA;
 	}
 
+
+	//modification Operations ...................................................
+	inline_ _tData upsert(const _tKey& key, const _tData& data) {
+		const unsigned int hash( _tHash::Calc(key) );
+		Segment&	segment(_segments[(hash >> _segmentShift) & _segmentMask]);
+
+		//go over the list and look for key
+		segment._lock.lock();
+		Bucket* const start_bucket( &(_table[hash & _bucketMask]) );
+
+		Bucket* last_bucket( NULL );
+		Bucket* compare_bucket( start_bucket );
+		short next_delta( compare_bucket->_first_delta );
+		while (_NULL_DELTA != next_delta) {
+			compare_bucket += next_delta;
+			if( hash == compare_bucket->_hash && _tHash::IsEqual(key, compare_bucket->_key) ) {
+				compare_bucket->_data += data;
+				const _tData rc((_tData&)(compare_bucket->_data));
+				segment._lock.unlock();
+				return rc;
+			}
+			last_bucket = compare_bucket;
+			next_delta = compare_bucket->_next_delta;
+		}
+
+		//try to place the key in the same cache-line
+		if(_is_cacheline_alignment) {
+			Bucket*	free_bucket( start_bucket );
+			Bucket*	start_cacheline_bucket(get_start_cacheline_bucket(start_bucket));
+			Bucket*	end_cacheline_bucket(start_cacheline_bucket + _cache_mask);
+			do {
+				if( _tHash::_EMPTY_HASH == free_bucket->_hash ) {
+					add_key_to_begining_of_list(start_bucket, free_bucket, hash, key, data);
+					segment._lock.unlock();
+					return _tHash::_EMPTY_DATA;
+				}
+				++free_bucket;
+				if(free_bucket > end_cacheline_bucket)
+					free_bucket = start_cacheline_bucket;
+			} while(start_bucket != free_bucket);
+		}
+
+		//place key in arbitrary free forward bucket
+		Bucket* max_bucket( start_bucket + (SHRT_MAX-1) );
+		Bucket* last_table_bucket(_table + _bucketMask);
+		if(max_bucket > last_table_bucket)
+			max_bucket = last_table_bucket;
+		Bucket* free_max_bucket( start_bucket + (_cache_mask + 1) );
+		while (free_max_bucket <= max_bucket) {
+			if( _tHash::_EMPTY_HASH == free_max_bucket->_hash ) {
+				add_key_to_end_of_list(start_bucket, free_max_bucket, hash, key, data, last_bucket);
+				segment._lock.unlock();
+				return _tHash::_EMPTY_DATA;
+			}
+			++free_max_bucket;
+		}
+
+		//place key in arbitrary free backward bucket
+		Bucket* min_bucket( start_bucket - (SHRT_MAX-1) );
+		if(min_bucket < _table)
+			min_bucket = _table;
+		Bucket* free_min_bucket( start_bucket - (_cache_mask + 1) );
+		while (free_min_bucket >= min_bucket) {
+			if( _tHash::_EMPTY_HASH == free_min_bucket->_hash ) {
+				add_key_to_end_of_list(start_bucket, free_min_bucket, hash, key, data, last_bucket);
+				segment._lock.unlock();
+				return _tHash::_EMPTY_DATA;
+			}
+			--free_min_bucket;
+		}
+
+		//NEED TO RESIZE ..........................
+		fprintf(stderr, "ERROR - RESIZE is not implemented - size %u\n", size());
+		exit(1);
+		return _tHash::_EMPTY_DATA;
+	}
+
+
+
 	inline_ _tData remove(const _tKey& key) {
 		//CALCULATE HASH ..........................
 		const unsigned int hash( _tHash::Calc(key) );

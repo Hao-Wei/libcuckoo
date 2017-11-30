@@ -325,6 +325,65 @@ class hopscotch_map {
     return false;//return _tHash::_EMPTY_DATA;
   }
 
+  //modification Operations ...................................................
+  inline bool upsert(const eType keyvalue){
+    //CALCULATE HASH ..........................
+    kType key = hashStruct.getKey(keyvalue);
+    const unsigned int hash( hashStruct.hash(key) );
+
+    //LOCK KEY HASH ENTERY ....................
+    Segment&	segment(_segments[(hash >> _segmentShift) & _segmentMask]);
+    segment.Lock();
+    Bucket* const startBucket( &(_table[hash & _bucketMask]) );
+
+    //CHECK IF ALREADY CONTAIN ................
+    register unsigned int hopInfo( startBucket->_hopInfo );
+    while(0 != hopInfo) {
+      register const int i( first_lsb_bit_indx(hopInfo) );
+      Bucket* currElm( startBucket + i);
+      if(hash == currElm->_hash && 0 == hashStruct.cmp(key, hashStruct.getKey(currElm->_keyvalue))) {
+      currElm->_keyvalue = make_pair(keyvalue.first, keyvalue.second + currElm->_keyvalue.second);
+	//register const _tData rc(currElm->_data);
+	segment.Unlock();
+	//return rc;
+	return false;
+      }
+      hopInfo &= ~(1U << i);
+    }
+
+    //LOOK FOR FREE BUCKET ....................
+    register Bucket* free_bucket( startBucket );
+    register unsigned int free_distance(0);
+    for(; free_distance < _INSERT_RANGE; ++free_distance, ++free_bucket) {
+      /* if( (emptyHash == free_bucket->_hash) &&	(emptyHash == _tMemory::compare_and_set(&(free_bucket->_hash), emptyHash, busyHash)) ) */
+      if( (emptyHash == free_bucket->_hash) &&	(utils::CAS((uint*)&(free_bucket->_hash),(uint) emptyHash, (uint)busyHash)) )
+
+	break;
+    }
+    //PLACE THE NEW KEY .......................
+    if (free_distance < _INSERT_RANGE) {
+      do {
+	if (free_distance < _HOP_RANGE) {
+	  /* free_bucket->_data   = data; */
+	  /* free_bucket->_key		= key; */
+	  free_bucket->_keyvalue = keyvalue;
+	  free_bucket->_hash   = hash;
+	  startBucket->_hopInfo |= (1U << free_distance);
+	  segment.Unlock();
+	  return true;
+	  //return _tHash::_EMPTY_DATA;
+	}
+	find_closer_free_backet(&segment, &free_bucket, &free_distance);
+      } while (0 != free_bucket);
+    }
+
+    //NEED TO RESIZE ..........................
+    fprintf(stderr, "ERROR - RESIZE is not implemented \n");
+    exit(1);
+    return false;//return _tHash::_EMPTY_DATA;
+  }
+
+
   inline bool deleteVal( const kType key ) {
     //CALCULATE HASH ..........................
     const unsigned int hash( hashStruct.hash(key) );

@@ -4,11 +4,11 @@ rm -R builds
 mkdir builds
 cd builds
 
-mkdir hopscotch_bitmap
-cd hopscotch_bitmap
-cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH_BITMAP ../..
-make all
-cd ..
+#mkdir hopscotch_v2
+#cd hopscotch_v2
+#cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH_V2 ../..
+#make all
+#cd ..
 
 mkdir hopscotch
 cd hopscotch
