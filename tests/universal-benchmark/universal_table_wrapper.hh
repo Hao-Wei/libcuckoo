@@ -394,8 +394,8 @@ public:
 
 const uint64_t HASH_INT::_EMPTY_HASH = 0;
 const uint64_t HASH_INT::_BUSY_HASH  = 1;
-const uint64_t HASH_INT::_EMPTY_KEY  = 0;
-const uint64_t HASH_INT::_EMPTY_DATA = 0;
+const uint64_t HASH_INT::_EMPTY_KEY  = (((uint64_t)1) << 63);
+const uint64_t HASH_INT::_EMPTY_DATA = (((uint64_t)1) << 63);
 
 class Table {
 public:
