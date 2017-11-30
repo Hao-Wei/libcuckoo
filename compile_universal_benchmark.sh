@@ -4,6 +4,18 @@ rm -R builds
 mkdir builds
 cd builds
 
+mkdir hopscotch_bitmap
+cd hopscotch_bitmap
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH_BITMAP ../..
+make all
+cd ..
+
+mkdir hopscotch
+cd hopscotch
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH ../..
+make all
+cd ..
+
 mkdir libcuckoo
 cd libcuckoo
 cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=LIBCUCKOO ../..
@@ -19,12 +31,6 @@ cd ..
 mkdir ndhash
 cd ndhash
 cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=NDHASH ../..
-make all
-cd ..
-
-mkdir folklore
-cd folklore
-cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=FOLKLORE ../..
 make all
 cd ..
 

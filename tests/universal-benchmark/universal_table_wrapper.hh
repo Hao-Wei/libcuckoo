@@ -296,58 +296,44 @@ public:
 #endif
 
 
-#ifdef HOPSCOTCH
-#define TABLE "HOPSCOTCH"
-#define TABLE_TYPE "hopscotch_map"
+#ifdef HOPSCOTCH_BITMAP
+#define TABLE "HOPSCOTCH_BITMAP"
+#define TABLE_TYPE "hopscotch_bitmap_map"
 #define INTEL64 1
 #include "hashtables/hopscotch/framework/cpp_framework.h"
 #include "hashtables/hopscotch/test/Configuration.h"
 #include "hashtables/hopscotch/data_structures/BitmapHopscotchHashMap.h"
-#include "hashtables/hopscotch/data_structures/BitmapHopscotchHashMapOpt.h"
 #include "hashtables/hopscotch/data_structures/HopscotchHashMap.h"
 
 class HASH_INT {
 public:
 	//you must define the following fields and properties
-	static const unsigned int _EMPTY_HASH;
-	static const unsigned int _BUSY_HASH;
-	static const int _EMPTY_KEY;
-	static const int _EMPTY_DATA;
+	static const uint64_t _EMPTY_HASH;
+	static const uint64_t _BUSY_HASH;
+	static const uint64_t _EMPTY_KEY;
+	static const uint64_t _EMPTY_DATA;
 
-  inline_ static unsigned int Calc(int key) {
-    key = (key+0x7ed55d16) + (key<<12);
-    key = (key^0xc761c23c) ^ (key>>19);
-    key = (key+0x165667b1) + (key<<5);
-    key = (key+0xd3a2646c) ^ (key<<9);
-    key = (key+0xfd7046c5) + (key<<3);
-    key = (key^0xb55a4f09) ^ (key>>16);
-
-    // key ^= (key << 15) ^ 0xcd7dcd7d;
-    // key ^= (key >> 10);
-    // key ^= (key <<  3);
-    // key ^= (key >>  6);
-    // key ^= (key <<  2) + (key << 14);
-    // key ^= (key >> 16);
-		return key;
+  inline_ static uint64_t Calc(uint64_t key) {
+    	return std::hash<uint64_t>{}(key);
 	}
 
-	inline_ static bool IsEqual(int left_key, int right_key) {
+	inline_ static bool IsEqual(uint64_t left_key, uint64_t right_key) {
 		return left_key == right_key;
 	}
 
-	inline_ static void relocate_key_reference(int volatile& left, const int volatile& right) {
+	inline_ static void relocate_key_reference(uint64_t volatile& left, const uint64_t volatile& right) {
 		left = right;
 	}
 
-	inline_ static void relocate_data_reference(int volatile& left, const int volatile& right) {
+	inline_ static void relocate_data_reference(uint64_t volatile& left, const uint64_t volatile& right) {
 		left = right;
 	}
 };
 
-const unsigned int HASH_INT::_EMPTY_HASH = 0;
-const unsigned int HASH_INT::_BUSY_HASH  = 1;
-const int HASH_INT::_EMPTY_KEY  = 0;
-const int HASH_INT::_EMPTY_DATA = 0;
+const uint64_t HASH_INT::_EMPTY_HASH = 0;
+const uint64_t HASH_INT::_BUSY_HASH  = 1;
+const uint64_t HASH_INT::_EMPTY_KEY  = 0;
+const uint64_t HASH_INT::_EMPTY_DATA = 0;
 
 class Table {
 public:
@@ -366,8 +352,8 @@ public:
   }
 
   template <typename K, typename V> bool insert(const K &k, const V &v) {
-  	tbl.putIfAbsent(k, v);
-    return 1;
+  	K tk = tbl.putIfAbsent(k, v);
+    return tk == HASH_INT::_EMPTY_KEY;
   }
 
   template <typename K> bool erase(const K &k) { return 0; }
@@ -381,7 +367,88 @@ public:
     0;
   }
 
-  BitmapHopscotchHashMap<int, int, HASH_INT, CMDR::TTASLock, CMDR::Memory> tbl;
+  BitmapHopscotchHashMap<uint64_t, uint64_t, HASH_INT, CMDR::TTASLock, CMDR::Memory> tbl;
+
+
+};
+
+#else
+//#error Must define NDHASH
+#endif
+
+
+#ifdef HOPSCOTCH
+#define TABLE "HOPSCOTCH"
+#define TABLE_TYPE "hopscotch_map"
+#define INTEL64 1
+#include "hashtables/hopscotch/framework/cpp_framework.h"
+#include "hashtables/hopscotch/test/Configuration.h"
+#include "hashtables/hopscotch/data_structures/BitmapHopscotchHashMap.h"
+#include "hashtables/hopscotch/data_structures/HopscotchHashMap.h"
+
+class HASH_INT {
+public:
+	//you must define the following fields and properties
+	static const uint64_t _EMPTY_HASH;
+	static const uint64_t _BUSY_HASH;
+	static const uint64_t _EMPTY_KEY;
+	static const uint64_t _EMPTY_DATA;
+
+  inline_ static uint64_t Calc(uint64_t key) {
+    	return std::hash<uint64_t>{}(key);
+	}
+
+	inline_ static bool IsEqual(uint64_t left_key, uint64_t right_key) {
+		return left_key == right_key;
+	}
+
+	inline_ static void relocate_key_reference(uint64_t volatile& left, const uint64_t volatile& right) {
+		left = right;
+	}
+
+	inline_ static void relocate_data_reference(uint64_t volatile& left, const uint64_t volatile& right) {
+		left = right;
+	}
+};
+
+const uint64_t HASH_INT::_EMPTY_HASH = 0;
+const uint64_t HASH_INT::_BUSY_HASH  = 1;
+const uint64_t HASH_INT::_EMPTY_KEY  = 0;
+const uint64_t HASH_INT::_EMPTY_DATA = 0;
+
+class Table {
+public:
+  Table(size_t n) :
+  	tbl(2*n, 1000*10) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	if(tbl.containsKey(k))
+  	{
+  		v = tbl.putIfAbsent(k, 0);
+  		return 1;
+  	}
+  	else
+    	return 0;
+    
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	K tk = tbl.putIfAbsent(k, v);
+    return tk == HASH_INT::_EMPTY_KEY;
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+    0;
+  }
+
+  HopscotchHashMap<uint64_t, uint64_t, HASH_INT, CMDR::TTASLock, CMDR::Memory> tbl;
 
 
 };
