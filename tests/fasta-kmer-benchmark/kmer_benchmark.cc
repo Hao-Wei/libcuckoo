@@ -17,8 +17,8 @@
 #include <thread>
 #include <vector>
 
-#include <pcg/pcg_random.hpp>
-#include <test_util.hh>
+// #include <pcg/pcg_random.hpp>
+// #include <test_util.hh>
 
 #include "universal_table_wrapper.hh"
 
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
     
     
     // Create and size the table
-    Table tbl(initial_capacity);
+    Table tbl(initial_capacity, g_threads);
 
 
     // Run the counting "algorithm"
