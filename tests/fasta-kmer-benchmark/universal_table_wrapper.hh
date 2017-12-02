@@ -140,11 +140,11 @@ private:
 #ifdef LIBCUCKOO
 #define TABLE "LIBCUCKOO"
 #define TABLE_TYPE "cuckoohash_map"
-#include <libcuckoo/cuckoohash_map.hh>
+#include <hashtables/libcuckoo/cuckoohash_map.hh>
 
 class Table {
 public:
-  Table(size_t n) : tbl(n) {}
+  Table(size_t n, size_t n_threads) : tbl(n) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) const {
     return tbl.find(k, v);
@@ -172,7 +172,320 @@ private:
 };
 
 #else
-#error Must define LIBCUCKOO
+//#error Must define LIBCUCKOO
+#endif
+
+#ifdef DHASH
+#define TABLE "DHASH"
+#define TABLE_TYPE "deterministic_map"
+#define MCX16 1
+#include <hashtables/deterministicHash/deterministicHash.h>
+
+
+//K and V have to be ints for now
+template <typename K, typename V>
+struct hashCustomPair {
+  typedef pair<K, V> eType;
+  typedef K kType;
+  eType empty() {return make_pair(-1, -1);}
+  kType getKey(eType v) {return v.first;}
+  unsigned int hash(kType v) {return utils::hash(v);}
+  int cmp(kType v, kType b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
+  bool replaceQ(eType v, eType b) {return 0;}
+};
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : 
+  	hashStruct(hashCustomPair<KEY, VALUE>()), 
+  	tbl(n, hashStruct), 
+  	empty(hashStruct.empty()) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	pair<KEY,VALUE> kv = tbl.find(k);
+  	if(kv == empty) return 0;
+  	v = kv.second; 
+    return 1;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    return tbl.insert(kv);
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+  	return;
+  }
+
+  d_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;
+  hashCustomPair<KEY, VALUE> hashStruct;
+  pair<KEY, VALUE> empty;
+
+};
+
+#else
+//#error Must define DHASH
+#endif
+
+
+#ifdef NDHASH
+#define TABLE "NDHASH"
+#define TABLE_TYPE "nondeterministic_map"
+#define MCX16 1
+#include <hashtables/ndHash/ndHash.h>
+
+
+//K and V have to be ints for now
+template <typename K, typename V>
+struct hashCustomPair {
+  typedef pair<K, V> eType;
+  typedef K kType;
+  eType empty() {return make_pair(-1, -1);}
+  kType getKey(eType v) {return v.first;}
+  unsigned int hash(kType v) {return utils::hash(v);}
+  int cmp(kType v, kType b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
+  bool replaceQ(eType v, eType b) {return 0;}
+};
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : 
+  	hashStruct(hashCustomPair<KEY, VALUE>()), 
+  	tbl(n, hashStruct), 
+  	empty(hashStruct.empty()) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	pair<KEY,VALUE> kv = tbl.find(k);
+  	if(kv == empty) return 0;
+  	v = kv.second; 
+    return 1;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    return tbl.insert(kv);
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    tbl.upsert(kv);
+  }
+
+  nd_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;
+  hashCustomPair<KEY, VALUE> hashStruct;
+  pair<KEY, VALUE> empty;
+
+};
+
+#else
+//#error Must define NDHASH
+#endif
+
+
+
+#ifdef HOPSCOTCH_V2
+#define TABLE "HOPSCOTCH_V2"
+#define TABLE_TYPE "hopscotch_v2_map"
+#define MCX16 1
+#include <hashtables/hopscotch_v2/hopscotchHash.h>
+
+
+//K and V have to be ints for now
+template <typename K, typename V>
+struct hashCustomPair {
+  typedef pair<K, V> eType;
+  typedef K kType;
+  eType empty() {return make_pair(-1, -1);}
+  kType getKey(eType v) {return v.first;}
+  unsigned int hash(kType v) {return utils::hash(v);}
+  int cmp(kType v, kType b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
+  bool replaceQ(eType v, eType b) {return 0;}
+};
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : 
+  	hashStruct(hashCustomPair<KEY, VALUE>()), 
+  	tbl(n, hashStruct, 10000), 
+  	empty(hashStruct.empty()) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	pair<KEY,VALUE> kv = tbl.find(k);
+  	if(kv == empty) return 0;
+  	v = kv.second; 
+    return 1;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    return tbl.insert(kv);
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    tbl.upsert(kv);
+  }
+
+  hopscotch_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;
+  hashCustomPair<KEY, VALUE> hashStruct;
+  pair<KEY, VALUE> empty;
+
+};
+
+#else
+//#error Must define NDHASH
+#endif
+
+
+#ifdef HOPSCOTCH
+#define TABLE "HOPSCOTCH"
+#define TABLE_TYPE "hopscotch_map"
+#define INTEL64 1
+#include "hashtables/hopscotch/framework/cpp_framework.h"
+#include "hashtables/hopscotch/test/Configuration.h"
+#include "hashtables/hopscotch/data_structures/BitmapHopscotchHashMap.h"
+#include "hashtables/hopscotch/data_structures/HopscotchHashMap.h"
+
+class HASH_INT {
+public:
+	//you must define the following fields and properties
+	static const unsigned int _EMPTY_HASH;
+	static const unsigned int _BUSY_HASH;
+	static const uint64_t _EMPTY_KEY;
+	static const uint64_t _EMPTY_DATA;
+
+  inline_ static unsigned int Calc(uint64_t key) {
+  		unsigned int ret = std::hash<uint64_t>{}(key);
+  		if(ret < 2) ret = 2;
+    	return ret;
+	}
+
+	inline_ static bool IsEqual(uint64_t left_key, uint64_t right_key) {
+		return left_key == right_key;
+	}
+
+	inline_ static void relocate_key_reference(uint64_t volatile& left, const uint64_t volatile& right) {
+		left = right;
+	}
+
+	inline_ static void relocate_data_reference(uint64_t volatile& left, const uint64_t volatile& right) {
+		left = right;
+	}
+};
+
+const unsigned int HASH_INT::_EMPTY_HASH = 0;
+const unsigned int HASH_INT::_BUSY_HASH  = 1;
+const uint64_t HASH_INT::_EMPTY_KEY  = ((uint64_t)1) << 60;
+const uint64_t HASH_INT::_EMPTY_DATA = ((uint64_t)1) << 60;
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) :
+  	tbl(2*n, 10000*n_threads) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	if(tbl.containsKey(k))
+  	{
+  		v = tbl.putIfAbsent(k, 0);
+  		return 1;
+  	}
+  	else
+    	return 0;
+    
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	V tv = tbl.putIfAbsent(k, v);
+    return tv == HASH_INT::_EMPTY_DATA;
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+  	tbl.upsert(k, v);
+  }
+
+  HopscotchHashMap<uint64_t, uint64_t, HASH_INT, CMDR::TTASLock, CMDR::Memory> tbl;
+
+
+};
+
+#else
+//#error Must define NDHASH
+#endif
+
+
+#ifdef FOLKLORE
+#define TABLE "FOLKLORE"
+#define TABLE_TYPE "folklore_map"
+#include <hashtables/growt/data-structures/growtable.h>
+#include <hashtables/growt/data-structures/returnelement.h>
+#define MURMUR2
+#include <hashtables/growt/utils/hashfct.h>
+#include <hashtables/growt/utils/alignedallocator.h>
+#include <hashtables/growt/data-structures/definitions.h>
+#include <hashtables/growt/example/update_fcts.h>
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : 
+  	tbl(n) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	auto kv = tbl.find(k);
+  	if(!kv) return 0;
+  	v = kv.second; 
+    return 1;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+    return successful(tbl.insert(k, v));
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+    tbl.insertOrUpdate(k, v, growt::example::Increment());
+  }
+
+  growt::folklore<murmur2_hasher, growt::AlignedAllocator<> > tbl;
+
+
+};
+
+#else
+//#error Must define NDHASH
 #endif
 
 #endif // _UNIVERSAL_TABLE_WRAPPER_HH

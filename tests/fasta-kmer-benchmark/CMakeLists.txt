@@ -17,6 +17,8 @@ target_compile_options(kmer_benchmark
     PRIVATE -DKEY=std::string
     PRIVATE -DVALUE=size_t
     PRIVATE -D${UNIVERSAL_TABLE}
+    PRIVATE -O2
+    PRIVATE -std=c++11
 )
 
 if(UNIVERSAL_TRACKING_ALLOCATOR)

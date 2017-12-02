@@ -7,7 +7,8 @@ target_include_directories(test_util INTERFACE
 # Add pcg if we're doing stress tests or universal benchmark
 if (BUILD_TESTS OR
     BUILD_STRESS_TESTS OR
-    BUILD_UNIVERSAL_BENCHMARK)
+    BUILD_UNIVERSAL_BENCHMARK OR
+    BUILD_KMER)
     add_subdirectory(pcg)
 endif()
 
@@ -23,4 +24,8 @@ endif()
 
 if (BUILD_TESTS OR BUILD_UNIVERSAL_BENCHMARK)
     add_subdirectory(universal-benchmark)
+endif()
+
+if (BUILD_TESTS OR BUILD_KMER)
+    add_subdirectory(fasta-kmer-benchmark)
 endif()
