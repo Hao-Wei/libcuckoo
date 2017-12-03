@@ -488,4 +488,44 @@ public:
 //#error Must define NDHASH
 #endif
 
+
+#ifdef PARALLELDP
+#define TABLE "PARALLELDP"
+#define TABLE_TYPE "paralleldp_map"
+#include <hashtables/paralleldp/paralleldp.h>
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : 
+  	tbl(n) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+    tbl.find(k, v);
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+    return tbl.insert(k, v);
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return tbl.update(k, v);
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+    tbl.upsert(k, v);
+  }
+
+  parallel_map<KEY,VALUE> tbl;
+
+
+};
+
+#else
+//#error Must define PARALLELDP
+#endif
+
+
 #endif // _UNIVERSAL_TABLE_WRAPPER_HH
