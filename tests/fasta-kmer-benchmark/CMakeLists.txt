@@ -19,6 +19,7 @@ target_compile_options(kmer_benchmark
     PRIVATE -D${UNIVERSAL_TABLE}
     PRIVATE -O2
     PRIVATE -std=c++11
+    -mcx16
 )
 
 if(UNIVERSAL_TRACKING_ALLOCATOR)

@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "universal_table_wrapper.hh"
+#include "tests/universal-benchmark/universal_table_wrapper.hh"
 
 /* Run-time parameters -- operation mix and table configuration */
 
