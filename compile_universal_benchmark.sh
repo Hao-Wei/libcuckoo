@@ -34,4 +34,10 @@ cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVE
 make all
 cd ..
 
+mkdir paralleldp
+cd paralleldp
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=PARALLELDP ../..
+make all
+cd ..
+
 cd ..
