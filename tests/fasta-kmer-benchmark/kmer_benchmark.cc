@@ -259,7 +259,7 @@ int main(int argc, char** argv) {
     }
 
     // Create and size the table
-    Table tbl(Nchar, g_threads);
+    Table tbl(10*Nchar, g_threads);
 
     // Run the counting "algorithm"
     std::cout << "Running operations\n";
