@@ -15,6 +15,9 @@ if __name__ == '__main__':
 	
 	for f in os.listdir(result_dir):
 		s = open(result_dir + f, 'r').read()
+		if(s[:5] == 'FATAL'):
+			print 'Failed to parse ' + f
+			continue
 		s = eval(s)
 		table = s['table']
 		throughput = s['output']['throughput']
@@ -34,6 +37,7 @@ if __name__ == '__main__':
 		d[test][table][args['num-threads']] = {'throughput': throughput, 'runtime': runtime, 'total_ops': total_ops}
 	
 	pprint(d)
+	
 		
 	
 	

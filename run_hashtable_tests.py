@@ -30,16 +30,16 @@ if __name__ == '__main__':
 	os.mkdir("results/"+timestamp)
 	
 	n_threads = multiprocessing.cpu_count()
-	n_points = 5
+	n_points = 3
 	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
 	print threads
 	
 	for table in tables:
 		for thread in threads:
-			runTest(table, thread, total_ops=200, initial_capacity=25, prefill=75, reads=100)
-			runTest(table, thread, total_ops=50, initial_capacity=27, prefill=25, inserts=100)
-			runTest(table, thread, total_ops=50, initial_capacity=27, prefill=25, upserts=100)
+			runTest(table, thread, total_ops=200, initial_capacity=23, prefill=75, reads=100)
+			runTest(table, thread, total_ops=50, initial_capacity=24, prefill=25, inserts=100)
+			runTest(table, thread, total_ops=50, initial_capacity=24, prefill=25, upserts=100)
 			
 #		os.chdir("builds/" + table)
 #		for filename in os.listdir("."):
