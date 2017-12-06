@@ -6,3 +6,5 @@ hashtables/hopscotch/main.o
 hashtables/hopscotch/test_data/
 hashtables/hopscotch/test_intel64
 *.swp
+build/
+graphs/

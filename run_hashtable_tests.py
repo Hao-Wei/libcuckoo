@@ -1,5 +1,6 @@
 
 import os
+import subprocess
 import multiprocessing
 import math
 from time import gmtime, strftime
@@ -16,10 +17,11 @@ def runTest(table, thread, total_ops=100, initial_capacity=23, prefill=25, reads
 	upserts = str(upserts)
 	
 	program = "./builds/" + table + "/tests/universal-benchmark/universal_benchmark"
-	params = "--reads " + reads + " --inserts " + inserts + " --upserts " + upserts + " --initial-capacity " + initial_capacity + " --prefill " + prefill + " --total-ops " + total_ops + " --num-threads " + thread
 	output_file = "results/"+timestamp+"/"+table+"_"+thread+"_threads_"+reads+"_"+inserts+"_"+upserts
-	
-	return program + " " + params +" > " + output_file
+	params = program + " --reads " + reads + " --inserts " + inserts + " --upserts " + upserts + " --initial-capacity " + initial_capacity + " --prefill " + prefill + " --total-ops " + total_ops + " --num-threads " + thread + " > " + output_file
+
+	print params
+	os.system(params)
 
 
 if __name__ == '__main__':
@@ -29,14 +31,14 @@ if __name__ == '__main__':
 	os.mkdir("results/"+timestamp)
 	
 	n_threads = multiprocessing.cpu_count()
-	n_points = 2
+	n_points = 5
 	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
-	threads.append(multiprocessing.cpu_count()*2)
-
+	print threads
+	
 	for table in tables:
 		for thread in threads:
-			os.system(runTest(table, thread, total_ops=100, initial_capacity=23, prefill=25, reads=100))
+			runTest(table, thread, total_ops=100, initial_capacity=23, prefill=25, reads=100)
 			
 #		os.chdir("builds/" + table)
 #		for filename in os.listdir("."):

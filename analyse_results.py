@@ -26,10 +26,12 @@ if __name__ == '__main__':
 		for i in range(0, len(ss), 2):
 			args[ss[i][2:]] = ss[i+1]
 		
-		test = table + '-' + args['reads'] + '-' + args['inserts'] + '-' + args['upserts']
+		test = args['reads'] + '-' + args['inserts'] + '-' + args['upserts']
 		if test not in d:
 			d[test] = {}
-		d[test][args['num-threads']] = {'throughput': throughput, 'runtime': runtime, 'total_ops': total_ops}
+		if table not in d[test]:
+			d[test][table] = {}
+		d[test][table][args['num-threads']] = {'throughput': throughput, 'runtime': runtime, 'total_ops': total_ops}
 	
 	pprint(d)
 		
