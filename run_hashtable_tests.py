@@ -20,7 +20,6 @@ def runTest(table, thread, total_ops=100, initial_capacity=23, prefill=25, reads
 	output_file = "results/"+timestamp+"/"+table+"_"+thread+"_threads_"+reads+"_"+inserts+"_"+upserts
 	params = program + " --reads " + reads + " --inserts " + inserts + " --upserts " + upserts + " --initial-capacity " + initial_capacity + " --prefill " + prefill + " --total-ops " + total_ops + " --num-threads " + thread + " > " + output_file
 
-	print params
 	os.system(params)
 
 
@@ -38,7 +37,9 @@ if __name__ == '__main__':
 	
 	for table in tables:
 		for thread in threads:
-			runTest(table, thread, total_ops=100, initial_capacity=23, prefill=25, reads=100)
+			runTest(table, thread, total_ops=200, initial_capacity=25, prefill=75, reads=100)
+			runTest(table, thread, total_ops=50, initial_capacity=27, prefill=25, inserts=100)
+			runTest(table, thread, total_ops=50, initial_capacity=27, prefill=25, upserts=100)
 			
 #		os.chdir("builds/" + table)
 #		for filename in os.listdir("."):
