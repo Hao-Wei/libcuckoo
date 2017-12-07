@@ -1,4 +1,5 @@
 from pprint import pprint
+import matplotlib.pyplot as plt
 import os
 
 if __name__ == '__main__':
@@ -16,7 +17,7 @@ if __name__ == '__main__':
 	for f in os.listdir(result_dir):
 		s = open(result_dir + f, 'r').read()
 		if(s[:5] == 'FATAL'):
-			print 'Failed to parse ' + f
+			print('Failed to parse ' + f)
 			continue
 		s = eval(s)
 		table = s['table']
@@ -36,7 +37,19 @@ if __name__ == '__main__':
 			d[test][table] = {}
 		d[test][table][args['num-threads']] = {'throughput': throughput, 'runtime': runtime, 'total_ops': total_ops}
 	
-	pprint(d)
+	colors = {'FOLKLORE': 'blue', 'HOPSCOTCH': 'pink', 'LIBCUCKOO': 'red', 'NDHASH': 'green', 'DHASH': 'lightgreen'}
+	
+	for test in d:
+		for table in d[test]:
+			dd = d[test][table]
+			x = dd.keys()
+			x.sort()
+			y = []
+			for t in x:
+				y.append(dd[t]['throughput']['value'])
+			plt.plot(x, y, color=colors[table], linewidth=3)
+		
+		plt.show()
 	
 		
 	
