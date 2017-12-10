@@ -19,7 +19,9 @@ def runTest(table, thread, total_ops=100, initial_capacity=23, prefill=25, reads
 	program = "./builds/" + table + "/tests/universal-benchmark/universal_benchmark"
 	output_file = "results/"+timestamp+"/"+table+"_"+thread+"_threads_"+reads+"_"+inserts+"_"+upserts
 	params = program + " --reads " + reads + " --inserts " + inserts + " --upserts " + upserts + " --initial-capacity " + initial_capacity + " --prefill " + prefill + " --total-ops " + total_ops + " --num-threads " + thread + " > " + output_file
-
+	
+	print(params)
+	
 	os.system(params)
 
 
@@ -31,7 +33,7 @@ if __name__ == '__main__':
 	
 	n_threads = multiprocessing.cpu_count()
 	n_points = 3
-	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash"]
+	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash", "paralleldp"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
 	print threads
 	
