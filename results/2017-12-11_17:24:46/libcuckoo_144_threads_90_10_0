@@ -1,0 +1,30 @@
+{
+    "args": "--reads 90 --inserts 10 --erases 0 --updates 0 --upserts 0 --initial-capacity 25 --prefill 50 --total-ops 100 --num-threads 144 --seed 835040952",
+    "key": "uint64_t",
+    "key_size": "8",
+    "value": "uint64_t",
+    "value_size": "8",
+    "table": "LIBCUCKOO",
+    "output": {
+        "total_ops": {
+            "name": "Total Operations",
+            "units": "count",
+            "value": 33554432
+        },
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": 0.8424
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "count/seconds",
+            "value": 39832091.8861
+        },
+        "memory_samples": {
+            "name": "Memory Samples",
+            "units": "[bytes]",
+            "value": []
+        }
+    }
+}
