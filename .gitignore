@@ -1,6 +1,5 @@
 builds/
 fasta_builds/
-fasta_results/
 install/
 results/
 hashtables/hopscotch/cpp_framework.o
