@@ -1,0 +1,30 @@
+{
+    "args": "--reads 90 --inserts 0 --erases 0 --updates 0 --upserts 10 --initial-capacity 24 --prefill 50 --total-ops 200 --num-threads 1 --seed 686088806",
+    "key": "uint64_t",
+    "key_size": "8",
+    "value": "uint64_t",
+    "value_size": "8",
+    "table": "HOPSCOTCH",
+    "output": {
+        "total_ops": {
+            "name": "Total Operations",
+            "units": "count",
+            "value": 33554432
+        },
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": 8.0955
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "count/seconds",
+            "value": 4144839.4293
+        },
+        "memory_samples": {
+            "name": "Memory Samples",
+            "units": "[bytes]",
+            "value": []
+        }
+    }
+}
