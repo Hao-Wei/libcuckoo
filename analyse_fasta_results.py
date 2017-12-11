@@ -5,10 +5,10 @@ import os
 if __name__ == '__main__':
 	ll = os.listdir("results")
 	ll.sort()
-	result_dir = 'results/' + max(ll) + '/'
-	graph_dir = 'graphs/' + max(ll) + '/'
-	if(not os.path.isdir("graphs")):
-		os.mkdir("graphs")
+	result_dir = 'fasta_results/' + max(ll) + '/'
+	graph_dir = 'fasta_graphs/' + max(ll) + '/'
+	if(not os.path.isdir("fasta_graphs")):
+		os.mkdir("fasta_graphs")
 	if(not os.path.isdir(graph_dir)):
 		os.mkdir(graph_dir)
 	

@@ -33,7 +33,7 @@ if __name__ == '__main__':
 	
 	n_threads = multiprocessing.cpu_count()
 	n_points = 3
-	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash", "paralleldp"]
+	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
 	print threads
 	

@@ -13,7 +13,7 @@ def runTest(table, thread):
 	thread = str(thread)
 	
 	program = "./builds/" + table + "/tests/fasta-kmer-benchmark/kmer_benchmark"
-	output_file = "results/"+timestamp+"/"+table+"_"+thread+"_threads.txt"
+	output_file = "fasta_results/"+timestamp+"/"+table+"_"+thread+"_threads.txt"
 	params = program + " " + str(thread) + " " + datafile + " > " + output_file
 	
 	print(params)
@@ -24,8 +24,8 @@ def runTest(table, thread):
 if __name__ == '__main__':
 	timestamp = strftime("%Y-%m-%d_%H:%M:%S", gmtime())
 	if(not os.path.isdir("results")):
-		os.mkdir("results")
-	os.mkdir("results/"+timestamp)
+		os.mkdir("fasta_results")
+	os.mkdir("fasta_results/"+timestamp)
 	
 	n_threads = multiprocessing.cpu_count()
 	n_points = 3

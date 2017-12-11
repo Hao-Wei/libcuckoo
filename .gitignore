@@ -8,3 +8,4 @@ hashtables/hopscotch/test_intel64
 *.swp
 build/
 graphs/
+run_hashtable_test.py
