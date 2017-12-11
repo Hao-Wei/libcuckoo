@@ -12,7 +12,7 @@ datafile = "tests/fasta-kmer-benchmark/data/Homo_sapiens.GRCh38.dna.chromosome.2
 def runTest(table, thread):
 	thread = str(thread)
 	
-	program = "./builds/" + table + "/tests/fasta-kmer-benchmark/kmer_benchmark"
+	program = "./fasta_builds/" + table + "/tests/fasta-kmer-benchmark/kmer_benchmark"
 	output_file = "fasta_results/"+timestamp+"/"+table+"_"+thread+"_threads.txt"
 	params = program + " " + str(thread) + " " + datafile + " > " + output_file
 	
@@ -23,14 +23,14 @@ def runTest(table, thread):
 
 if __name__ == '__main__':
 	timestamp = strftime("%Y-%m-%d_%H:%M:%S", gmtime())
-	if(not os.path.isdir("results")):
+	if(not os.path.isdir("fasta_results")):
 		os.mkdir("fasta_results")
 	os.mkdir("fasta_results/"+timestamp)
 	
 	n_threads = multiprocessing.cpu_count()
 	n_points = 3
 	# tables = ["folklore", "hopscotch", "libcuckoo", "ndhash", "paralleldp"]
-	tables = ["folklore", "hopscotch", "libcuckoo"]
+	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
 	print threads
 	

@@ -38,7 +38,7 @@ if __name__ == '__main__':
 		d[test][table][int(args['num-threads'])] = {'throughput': throughput, 'runtime': runtime, 'total_ops': total_ops}
 	
 	colors = {'FOLKLORE': 'blue', 'HOPSCOTCH': 'grey', 'LIBCUCKOO': 'red', 'NDHASH': 'green', 'DHASH': 'lightgreen', 'PARALLELDP': 'pink'}
-	test_dict = {'0-100-0': 'All inserts', '100-0-0': 'All reads'}
+	test_dict = {'0-100-0': 'All inserts', '100-0-0': 'All reads', '90-10-0': '90% Read, 10% Insert'}
 	
 	for test in d:
 		print test

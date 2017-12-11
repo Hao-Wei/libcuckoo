@@ -1,8 +1,8 @@
 #!/bin/bash
 
-rm -R builds
-mkdir builds
-cd builds
+rm -R fasta_builds
+mkdir fasta_builds
+cd fasta_builds
 
 mkdir folklore
 cd folklore

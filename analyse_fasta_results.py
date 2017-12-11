@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 if __name__ == '__main__':
-	ll = os.listdir("results")
+	ll = os.listdir("fasta_results")
 	ll.sort()
 	result_dir = 'fasta_results/' + max(ll) + '/'
 	graph_dir = 'fasta_graphs/' + max(ll) + '/'

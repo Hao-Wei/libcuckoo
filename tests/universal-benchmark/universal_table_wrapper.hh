@@ -144,7 +144,7 @@ private:
 
 class Table {
 public:
-  Table(size_t n, size_t n_threads) : tbl(n) {}
+  Table(size_t n, size_t n_threads) : tbl(2.5*n) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) const {
     return tbl.find(k, v);

@@ -41,7 +41,7 @@ if __name__ == '__main__':
 		for thread in threads:
 			runTest(table, thread, total_ops=200, initial_capacity=23, prefill=75, reads=100)
 			runTest(table, thread, total_ops=50, initial_capacity=24, prefill=25, inserts=100)
-			runTest(table, thread, total_ops=50, initial_capacity=24, prefill=25, upserts=100)
+			runTest(table, thread, total_ops=200, initial_capacity=24, prefill=50, reads=90, upserts=10)
 			
 #		os.chdir("builds/" + table)
 #		for filename in os.listdir("."):
