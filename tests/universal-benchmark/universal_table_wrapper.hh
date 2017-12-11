@@ -175,6 +175,47 @@ private:
 //#error Must define LIBCUCKOO
 #endif
 
+#ifdef RANDOM
+#define TABLE "RANDOM"
+#define TABLE_TYPE "random_map"
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : tbl((uint64_t*) aligned_alloc(sizeof(uint64_t), n*sizeof(uint64_t))), h(std::hash<uint64_t>()), n(n) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) const {
+  	uint64_t a = tbl[h(k)%n]; 
+    return a == 0;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	uint64_t i = h(k)%n;
+  	uint64_t a = tbl[i];
+  	tbl[i] = v;
+    return tbl[i] == a;
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+  	return 1;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+	int a = 1;
+  }
+
+private:
+  uint64_t* tbl;
+  std::hash<uint64_t> h;
+  size_t n;
+};
+
+#else
+//#error Must define LIBCUCKOO
+#endif
+
 #ifdef DHASH
 #define TABLE "DHASH"
 #define TABLE_TYPE "deterministic_map"

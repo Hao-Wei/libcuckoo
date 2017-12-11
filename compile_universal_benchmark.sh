@@ -10,9 +10,9 @@ cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVE
 make all
 cd ..
 
-mkdir hopscotch
-cd hopscotch
-cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH ../..
+mkdir random
+cd random
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=RANDOM ../..
 make all
 cd ..
 

@@ -22,6 +22,13 @@
 #include "universal_gen.hh"
 #include "universal_table_wrapper.hh"
 
+
+#undef ASSERT_TRUE
+#define ASSERT_TRUE(x) (x)
+
+#undef ASSERT_EQ
+#define ASSERT_EQ(x, y) (y)
+
 /* Run-time parameters -- operation mix and table configuration */
 
 // The following specify what percentage of operations should be of each type.
