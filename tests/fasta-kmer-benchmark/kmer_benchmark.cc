@@ -24,12 +24,15 @@
 /* Run-time parameters -- operation mix and table configuration */
 
 // Number of threads to run with
-// size_t g_threads = std::thread::hardware_concurrency();
-size_t g_threads = 8;
-#define K_LEN (17)  // MUST BE LESS THAN 32
+size_t g_threads = std::thread::hardware_concurrency();
+// size_t g_threads = 8;
+#define K_LEN (17)  // MUST BE LESS THAN 31
+#define MEMORY_FACTOR (4) // what multiple more than the number of characters should we allocate?
 
 #define XSTR(s) STR(s)
 #define STR(s) #s
+
+// #define PRINT_DEBUG_INFO
 
 using std::cerr;
 using std::cout;
@@ -62,7 +65,7 @@ uint64_t charInd(char c) {
 }
 
 uint64_t buildKey(const char* keyStart) {
-  uint64_t key = 0;
+  uint64_t key = 1; // (set a high bit, so we never output key=0, which some tables use for NO-KEY)
   // cout << "Generating key.." << endl;
   for (uint64_t i = 0; i < K_LEN; i++) {
     uint64_t charVal = charInd(keyStart[i]);
@@ -90,7 +93,9 @@ uint64_t buildKey(const char* keyStart) {
 // There are undoubtably better ways to manage memory here, but let's start with
 // this.
 void preloadFile(std::vector<char>*& entries, std::string filename) {
+#ifdef PRINT_DEBUG_INFO
   cout << "Preloading file: " << filename << endl;
+#endif
 
   std::ifstream inFile(filename);
   if (!inFile) {
@@ -113,8 +118,10 @@ void preloadFile(std::vector<char>*& entries, std::string filename) {
     }
   }
 
+#ifdef PRINT_DEBUG_INFO
   cout << "Loaded " << entries->size() << " entries." << endl;
   printf("  --> aka %.3f billion characters\n", (double)entries->size() / 1e9);
+#endif  
   // for(char& c : *entries) {
   //   cout << c << endl;
   // }
@@ -230,12 +237,21 @@ void serialResultCheck(Table& tbl, const char* sequence, size_t endInd) {
 int main(int argc, char** argv) {
   try {
     // Parse parameters
-    if (argc != 2) {
-      cout << "Usage: ./kmer FASTA_FILE" << endl;
+    if (argc != 3) {
+      cout << "Usage: ./kmer N_THREADS FASTA_FILE" << endl;
       exit(-1);
     }
 
-    std::string filename(argv[1]);
+
+    // Pack all args in to single string for debug printing
+    std::stringstream argstr;
+    argstr << argv[0];
+    for (size_t i = 1; i < argc; ++i) {
+      argstr << " " << argv[i];
+    }
+
+    g_threads = std::stol(argv[1]);
+    std::string filename(argv[2]);
 
     // Load the file
     std::vector<char>* seq;
@@ -249,20 +265,27 @@ int main(int argc, char** argv) {
     size_t nSubSeq = Nchar - K_LEN + 1;
     size_t nPer = nSubSeq / g_threads + 1;
     size_t currStart = 0;
+
+#ifdef PRINT_DEBUG_INFO
     cout << "Thread work distribution for " << g_threads << " threads:" << endl;
+#endif
     for (size_t iT = 0; iT < g_threads; iT++) {
       size_t nextStart = std::min(currStart + nPer, nSubSeq);
       startInds.push_back(currStart);
       endInds.push_back(nextStart);
+#ifdef PRINT_DEBUG_INFO
       printf("  Thread %3zu: [%15zu,%15zu)\n", iT, currStart, nextStart);
+#endif
       currStart = nextStart;
     }
 
     // Create and size the table
-    Table tbl(10*Nchar, g_threads);
+    Table tbl(MEMORY_FACTOR*Nchar, g_threads);
 
     // Run the counting "algorithm"
+#ifdef PRINT_DEBUG_INFO
     std::cout << "Running operations\n";
+#endif
     std::vector<std::thread> worker_threads(g_threads);
     auto start_time = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < g_threads; ++i) {
@@ -278,10 +301,43 @@ int main(int argc, char** argv) {
                                                                   start_time)
             .count();
 
+
+#ifdef PRINT_DEBUG_INFO
     printf("Hash time: %.3f seconds\n", seconds_elapsed);
+#endif
 
     // === Optional safety and sanity checks
-    serialResultCheck(tbl, seqArr, nSubSeq);
+    // serialResultCheck(tbl, seqArr, nSubSeq);
+
+    // Print json formatted string with result
+    float throughput = Nchar / seconds_elapsed;
+
+    const char *json_format = R"({
+    "args": "%s",
+    "threads": "%zu",
+    "key": "%s",
+    "key_size": "%zu",
+    "value": "%s",
+    "value_size": "%zu",
+    "table": "%s",
+    "input_file": "%s",
+    "output": {
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": %.4f
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "10^6 mers/second",
+            "value": %.4f
+        },
+    }
+}
+)";
+    printf(json_format, argstr.str().c_str(), g_threads, XSTR(KEY), sizeof(uint64_t),
+           XSTR(VALUE), sizeof(uint64_t), TABLE, filename.c_str(),
+           seconds_elapsed, throughput/1e6);
 
   } catch (const std::exception& e) {
     std::cerr << e.what();
