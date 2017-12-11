@@ -1,0 +1,22 @@
+{
+    "args": "./fasta_builds/folklore/tests/fasta-kmer-benchmark/kmer_benchmark 29 tests/fasta-kmer-benchmark/data/Homo_sapiens.GRCh38.dna.chromosome.22.fa",
+    "threads": "29",
+    "key": "uint64_t",
+    "key_size": "8",
+    "value": "uint64_t",
+    "value_size": "8",
+    "table": "FOLKLORE",
+    "input_file": "tests/fasta-kmer-benchmark/data/Homo_sapiens.GRCh38.dna.chromosome.22.fa",
+    "output": {
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": 0.4789
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "10^6 mers/second",
+            "value": 81.7630
+        },
+    }
+}
