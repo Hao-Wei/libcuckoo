@@ -181,18 +181,16 @@ private:
 
 class Table {
 public:
-  Table(size_t n, size_t n_threads) : tbl((uint64_t*) aligned_alloc(sizeof(uint64_t), n*sizeof(uint64_t))), h(std::hash<uint64_t>()), n(n) {}
+  Table(size_t n, size_t n_threads) : tbl((uint64_t*) aligned_alloc(sizeof(uint64_t), n*sizeof(uint64_t))), h(std::hash<uint64_t>()), n(n), mask(n-1) {}
 
   template <typename K, typename V> bool read(const K &k, V &v) const {
-  	uint64_t a = tbl[h(k)%n]; 
+  	uint64_t a = tbl[h(k) & mask]; 
     return a == 0;
   }
 
   template <typename K, typename V> bool insert(const K &k, const V &v) {
-  	uint64_t i = h(k)%n;
-  	uint64_t a = tbl[i];
-  	tbl[i] = v;
-    return tbl[i] == a;
+  	tbl[h(k) & mask] = v;
+    return 1;
   }
 
   template <typename K> bool erase(const K &k) { return 0; }
@@ -210,11 +208,89 @@ private:
   uint64_t* tbl;
   std::hash<uint64_t> h;
   size_t n;
+  size_t mask;
 };
 
 #else
 //#error Must define LIBCUCKOO
 #endif
+
+
+#ifdef EMPTY
+#define TABLE "EMPTY"
+#define TABLE_TYPE "empty_map"
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) const {
+    return 1;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+    return 1;
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+  	return 1;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+  }
+
+private:
+
+};
+
+#else
+//#error Must define LIBCUCKOO
+#endif
+
+
+#ifdef RANDOM2
+#define TABLE "RANDOM2"
+#define TABLE_TYPE "random2_map"
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : tbl((uint64_t*) aligned_alloc(sizeof(uint64_t), n*sizeof(uint64_t))), h(std::hash<uint64_t>()), n(n), mask(n-1) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) const {
+  	uint64_t a = tbl[k & mask]; 
+    return a == 0;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	tbl[k & mask] = v;
+    return 1;
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+  	return 1;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+	int a = 1;
+  }
+
+private:
+  uint64_t* tbl;
+  std::hash<uint64_t> h;
+  size_t n;
+  size_t mask;
+};
+
+#else
+//#error Must define LIBCUCKOO
+#endif
+
 
 #ifdef DHASH
 #define TABLE "DHASH"

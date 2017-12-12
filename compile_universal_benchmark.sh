@@ -22,17 +22,24 @@ cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVE
 make all
 cd ..
 
+mkdir empty
+cd empty
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=EMPTY ../..
+make all
+cd ..
+
+mkdir random2
+cd random2
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=RANDOM2 ../..
+make all
+cd ..
+
 mkdir libcuckoo
 cd libcuckoo
 cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=LIBCUCKOO ../..
 make all
 cd ..
 	
-mkdir dhash
-cd dhash
-cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=DHASH ../..
-make all
-cd ..
 
 mkdir ndhash
 cd ndhash
