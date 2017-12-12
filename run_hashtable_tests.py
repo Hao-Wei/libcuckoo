@@ -33,7 +33,7 @@ if __name__ == '__main__':
 	
 	n_threads = multiprocessing.cpu_count()
 	n_points = 3
-	tables = ["folklore", "hopscotch", "libcuckoo", "ndhash"]
+	tables = ["folklore", "libcuckoo", "ndhash", "random", "paralleldp", "ndquad"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
 	print threads
 	
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 		for thread in threads:
 			runTest(table, thread, total_ops=200, initial_capacity=23, prefill=75, reads=100)
 			runTest(table, thread, total_ops=50, initial_capacity=24, prefill=25, inserts=100)
-			runTest(table, thread, total_ops=200, initial_capacity=24, prefill=50, reads=90, upserts=10)
+			runTest(table, thread, total_ops=200, initial_capacity=24, prefill=50, reads=90, inserts=10)
 			
 #		os.chdir("builds/" + table)
 #		for filename in os.listdir("."):

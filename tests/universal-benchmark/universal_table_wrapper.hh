@@ -338,6 +338,67 @@ public:
 
 
 
+#ifdef NDQUAD
+#define TABLE "NDQUAD"
+#define TABLE_TYPE "ndquad_map"
+#define MCX16 1
+#include <hashtables/ndHash-quad/ndHash.h>
+
+
+//K and V have to be ints for now
+template <typename K, typename V>
+struct hashCustomPair {
+  typedef pair<K, V> eType;
+  typedef K kType;
+  eType empty() {return make_pair(-1, -1);}
+  kType getKey(eType v) {return v.first;}
+  unsigned int hash(kType v) {return utils::hash(v);}
+  int cmp(kType v, kType b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
+  bool replaceQ(eType v, eType b) {return 0;}
+};
+
+class Table {
+public:
+  Table(size_t n, size_t n_threads) : 
+  	hashStruct(hashCustomPair<KEY, VALUE>()), 
+  	tbl(n, hashStruct), 
+  	empty(hashStruct.empty()) {}
+
+  template <typename K, typename V> bool read(const K &k, V &v) {
+  	pair<KEY,VALUE> kv = tbl.find(k);
+  	if(kv == empty) return 0;
+  	v = kv.second; 
+    return 1;
+  }
+
+  template <typename K, typename V> bool insert(const K &k, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    return tbl.insert(kv);
+  }
+
+  template <typename K> bool erase(const K &k) { return 0; }
+
+  template <typename K, typename V> bool update(const K &k, const V &v) {
+    return 0;
+  }
+
+  template <typename K, typename Updater, typename V>
+  void upsert(const K &k, Updater fn, const V &v) {
+  	pair<KEY,VALUE> kv = make_pair(k, v);
+    tbl.upsert(kv);
+  }
+
+  nd_map<hashCustomPair<KEY, VALUE>, int32_t > tbl;
+  hashCustomPair<KEY, VALUE> hashStruct;
+  pair<KEY, VALUE> empty;
+
+};
+
+#else
+//#error Must define NDHASH
+#endif
+
+
 #ifdef HOPSCOTCH_V2
 #define TABLE "HOPSCOTCH_V2"
 #define TABLE_TYPE "hopscotch_v2_map"
