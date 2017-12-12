@@ -1,7 +1,7 @@
 #ifndef A_HASH_INCLUDED
 #define A_HASH_INCLUDED
 
-#include <stdio.h>
+#include <iostream>
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -118,11 +118,8 @@ class parallel_map {
     if (vacant)
     {
       if( !__sync_bool_compare_and_swap_8(&ent->key, entkey, key)) {
-        if(should_update) {
-          return internal_insert(key, value, true);
-        } else {
-          return false;
-        }
+        // Somebody won the race to use this entry. So we try again
+        return internal_insert(key, value, should_update);
       }
       if(! __sync_bool_compare_and_swap_8(&ent->value, oldvalue, value)) {
         return false; // Somebody won the race to insert the value
@@ -131,11 +128,12 @@ class parallel_map {
     else 
     {
       if(should_update) {
-        if (oldvalue == value)  /* shortcut to avoid expense of CAS instruction */
+        /*if (oldvalue == value)  // shortcut to avoid expense of CAS instruction
           return true;
         while((! __sync_bool_compare_and_swap_8(&ent->value, oldvalue, value))) {
           oldvalue = ent->value;
-        }
+        }*/
+        __sync_fetch_and_add(&ent->value, 1);
       } else {
         return false;
       }
@@ -211,11 +209,12 @@ class parallel_map {
 
     assert(vacant == false);
     
-    while(! __sync_bool_compare_and_swap_8(&ent->value, oldvalue, value)) {
+    /*(while(! __sync_bool_compare_and_swap_8(&ent->value, oldvalue, value)) {
       oldvalue = ent->value;
-    }
+    }*/
+    __sync_fetch_and_add(&ent->value, 1);
 
-    return oldvalue;
+    return true;
   }
 
 
