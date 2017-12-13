@@ -1,0 +1,30 @@
+{
+    "args": "--reads 0 --inserts 100 --erases 0 --updates 0 --upserts 0 --initial-capacity 21 --prefill 25 --total-ops 50 --num-threads 72 --seed 2461570579",
+    "key": "uint64_t",
+    "key_size": "8",
+    "value": "uint64_t",
+    "value_size": "8",
+    "table": "FOLKLORE",
+    "output": {
+        "total_ops": {
+            "name": "Total Operations",
+            "units": "count",
+            "value": 1048576
+        },
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": 0.0110
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "count/seconds",
+            "value": 95104224.3169
+        },
+        "memory_samples": {
+            "name": "Memory Samples",
+            "units": "[bytes]",
+            "value": []
+        }
+    }
+}
