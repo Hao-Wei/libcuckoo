@@ -1,0 +1,30 @@
+{
+    "args": "--reads 90 --inserts 10 --erases 0 --updates 0 --upserts 0 --initial-capacity 26 --prefill 50 --total-ops 100 --num-threads 1 --seed 1050152817",
+    "key": "uint64_t",
+    "key_size": "8",
+    "value": "uint64_t",
+    "value_size": "8",
+    "table": "NDQUAD",
+    "output": {
+        "total_ops": {
+            "name": "Total Operations",
+            "units": "count",
+            "value": 67108864
+        },
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": 15.9321
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "count/seconds",
+            "value": 4212185.1488
+        },
+        "memory_samples": {
+            "name": "Memory Samples",
+            "units": "[bytes]",
+            "value": []
+        }
+    }
+}

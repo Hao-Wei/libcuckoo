@@ -1,0 +1,30 @@
+{
+    "args": "--reads 100 --inserts 0 --erases 0 --updates 0 --upserts 0 --initial-capacity 26 --prefill 75 --total-ops 100 --num-threads 43 --seed 4058720984",
+    "key": "uint64_t",
+    "key_size": "8",
+    "value": "uint64_t",
+    "value_size": "8",
+    "table": "NDHASH",
+    "output": {
+        "total_ops": {
+            "name": "Total Operations",
+            "units": "count",
+            "value": 67108864
+        },
+        "time_elapsed": {
+            "name": "Time Elapsed",
+            "units": "seconds",
+            "value": 0.5206
+        },
+        "throughput": {
+            "name": "Throughput",
+            "units": "count/seconds",
+            "value": 128901155.7470
+        },
+        "memory_samples": {
+            "name": "Memory Samples",
+            "units": "[bytes]",
+            "value": []
+        }
+    }
+}
