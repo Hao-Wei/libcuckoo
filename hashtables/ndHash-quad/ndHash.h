@@ -58,7 +58,7 @@ class nd_map {
 
   uintT hashToRange(intT h) {return h & mask;}
   intT firstIndex(kType v) {return hashToRange(hashStruct.hash(v));}
-  intT incrementIndex(intT h, int count) {return hashToRange(h+count*count);}
+  intT incrementIndex(intT h, int count) {return hashToRange(h+count);}
   intT decrementIndex(intT h) {return hashToRange(h-1);}
   bool lessIndex(intT a, intT b) {return 2 * hashToRange(a - b) > m;}
 
