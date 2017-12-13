@@ -133,7 +133,7 @@ bool add1(size_t& x) {
 }
 
 void countSequences(Table& tbl, const char* sequence, size_t startInd,
-                    size_t endInd) {
+                    size_t endInd, std::chrono::time_point<std::chrono::high_resolution_clock>& finishTime) {
   // First index special to initialize key
   // uint64_t key = buildKey(sequence + startInd);
   // tbl.upsert(key, add1, 1);
@@ -146,6 +146,8 @@ void countSequences(Table& tbl, const char* sequence, size_t startInd,
     // Increment
     tbl.upsert(key, add1, 1);
   }
+
+  finishTime = std::chrono::high_resolution_clock::now();
 }
 
 // Doesn't make a perf difference
@@ -287,19 +289,41 @@ int main(int argc, char** argv) {
     std::cout << "Running operations\n";
 #endif
     std::vector<std::thread> worker_threads(g_threads);
+    std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> threadFinishTimes(g_threads);
     auto start_time = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < g_threads; ++i) {
       worker_threads[i] = std::thread(countSequences, std::ref(tbl), seqArr,
-                                      startInds[i], endInds[i]);
+                                      startInds[i], endInds[i], threadFinishTimes[i]);
     }
-    for (auto& t : worker_threads) {
-      t.join();
+    std::vector<double> threadTimes;
+    for (size_t i = 0; i < g_threads; ++i) {
+      worker_threads[i].join();
+
+      // Compute the time that this thread took to execute
+
+      double thread_seconds_elapsed = std::chrono::duration_cast<std::chrono::duration<double>>(threadFinithTimes[i] - start_time).count();
+      threadTimes.push_back(thread_seconds_elapsed);
     }
     auto end_time = std::chrono::high_resolution_clock::now();
     double seconds_elapsed =
         std::chrono::duration_cast<std::chrono::duration<double>>(end_time -
                                                                   start_time)
             .count();
+
+    // Sort the thread times
+    std::sort(threadTimes.begin(), threadTimes.end());
+    double maxTime = threadTimes.back();
+    double medianTime = threadTimes[g_threads / 2];
+
+    // Print thread times
+    cout << "Thread times: " << endl;
+    cout << "  max = " << maxTime << endl;
+    cout << "  median = " << medianTime << endl;
+    cout << "  per thread" << endl;
+    for(auto x : threadTimes) {
+      cout << "    " << x << "," << endl;
+    }
+    
 
 
 #ifdef PRINT_DEBUG_INFO
