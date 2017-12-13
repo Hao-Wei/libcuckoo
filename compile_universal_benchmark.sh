@@ -6,7 +6,7 @@ cd builds
 
 mkdir hopscotch
 cd hopscotch
-cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=NDQUAD ../..
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_UNIVERSAL_BENCHMARK=1 -DUNIVERSAL_TABLE=HOPSCOTCH ../..
 make all
 cd ..
 
