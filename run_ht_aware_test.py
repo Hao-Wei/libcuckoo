@@ -32,8 +32,8 @@ if __name__ == '__main__':
 	os.mkdir("results/"+timestamp)
 	
 	n_threads = multiprocessing.cpu_count()/2
-	n_points = 10
-	tables = ["folklore", "libcuckoo", "ndhash"]
+	n_points = 5
+	tables = ["folklore", "libcuckoo", "ndhash", "random", "ndquad", "hopscotch"]
 	threads = [int(float(i)/n_points*(n_threads-1))+1 for i in range(n_points+1)]
 	threads.append(multiprocessing.cpu_count())
 	print threads
